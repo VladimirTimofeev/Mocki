@@ -1,0 +1,53 @@
+performanceProfiles:
+  # Реалистичный профиль - 90% успешных ответов, 10% ошибок/проблем
+  realistic:
+    ratio: 1.0          # вероятность применения профиля (1.0 = 100%)
+    delay: 0.05         # базовая задержка в секундах
+    faults:
+      '200': 0.90       # 90% - успешный ответ
+      '500': 0.05       # 5% - internal server error
+      '503': 0.03       # 3% - service unavailable
+      RST: 0.01         # 1% - сброс соединения
+      FIN: 0.01         # 1% - закрытие соединения
+
+  # Профиль для стресс-тестирования - высокий процент ошибок
+  stress:
+    ratio: 1.0
+    delay: 0.2
+    faults:
+      '200': 0.5
+      '500': 0.2
+      '503': 0.2
+      RST: 0.05
+      FIN: 0.05
+
+  # Профиль медленного сервиса
+  slow:
+    ratio: 1.0
+    delay: 2.0
+    faults:
+      PASS: 1.0         # PASS = не менять статус код
+
+services:
+  - name: Mock API
+    performanceProfile: realistic
+    port: 8001
+    endpoints:
+      - path: "/api/user"
+        method: GET
+        response:
+          headers:
+            Content-Type: application/json
+          body: '{"id": 1, "name": "test"}'
+
+      - path: "/api/user/{{userId}}"
+        method: GET
+        response:
+          headers:
+            Content-Type: application/json
+          body: '{"id": "{{userId}}", "name": "user_{{userId}}"}'
+
+      - path: "/api/health"
+        method: GET
+        response:
+          body: 'OK'

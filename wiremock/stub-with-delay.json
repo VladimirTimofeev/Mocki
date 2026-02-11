@@ -1,0 +1,14 @@
+{
+  "request": {
+    "method": "GET",
+    "url": "/api/slow"
+  },
+  "response": {
+    "status": 200,
+    "body": "{\"message\": \"slow response\"}",
+    "headers": {
+      "Content-Type": "application/json"
+    },
+    "fixedDelayMilliseconds": 500
+  }
+}
